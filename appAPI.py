@@ -64,4 +64,5 @@ if __name__ == '__main__':
     if not os.path.exists('tra_cfa_data.db'):
         print("Database file 'tra_cfa_data.db' not found. Please run the Dash app to create it.")
     else:
-        app.run(debug=True, port=5057)
+
+        app.run(debug=True, port=5000)
