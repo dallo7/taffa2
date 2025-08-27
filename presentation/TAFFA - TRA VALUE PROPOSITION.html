@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAFFA System Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .flow-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .step h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            font-size: 1.3rem;
+        }
+
+        .requirements {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .requirements h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+
+        .req-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .req-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border-left: 3px solid #27ae60;
+        }
+
+        .integration-box {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .integration-box h4 {
+            color: #d63031;
+            margin-bottom: 8px;
+        }
+
+        .transformation-impact {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .transformation-impact::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .impact-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .impact-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .impact-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .impact-scenario {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .impact-scenario h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .status-yes {
+            background: #00b894;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0,184,148,0.3);
+        }
+
+        .status-no {
+            background: #d63031;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(214,48,49,0.3);
+        }
+
+        .no-more-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .no-more-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .no-more-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .no-more-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .no-more-item:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .value-section {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .value-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2rem;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .value-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .value-item h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #3498db;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .api-highlight {
+            background: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .guidelines {
+            background: #f1f2f6;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .guidelines h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .guidelines ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .guidelines li {
+            background: white;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .system-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-item {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+            border-radius: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: #3498db;
+            flex-shrink: 0;
+        }
+
+        .business-value {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        }
+
+        .capitalpay-section {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+        }
+
+        @media (max-width: 768px) {
+            .flow-container {
+                grid-template-columns: 1fr;
+            }
+            .req-list {
+                grid-template-columns: 1fr;
+            }
+            .system-flow {
+                flex-direction: column;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TAFFA SYSTEM</h1>
+            <p>Tanzania Agent Verification & Revenue Enhancement Architecture</p>
+        </div>
+
+        <div class="content">
+            <!-- System Flow Overview -->
+            <div class="system-flow">
+                <div class="flow-item">TAFFA Portal</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Verification</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Certificate</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">TRA Integration</div>
+            </div>
+
+            <!-- Detailed Steps -->
+            <div class="flow-container">
+                <!-- Step 1: Data Capture -->
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Agent Data Capture</h3>
+                    <p>Clearing & Forwarding Agents access TAFFA portal for accreditation permit application or renewal</p>
+
+                    <div class="requirements">
+                        <h4>System Requirements Check</h4>
+                        <div class="req-list">
+                            <div class="req-item">✓ TIN Number</div>
+                            <div class="req-item">✓ Customer Satisfaction</div>
+                            <div class="req-item">✓ Tax Compliance (TRA)</div>
+                            <div class="req-item">✓ TAFFA Status</div>
+                            <div class="req-item">✓ Policy Compliance</div>
+                            <div class="req-item">✓ Payment Confirmation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Verification -->
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Automated Verification</h3>
+                    <p>System validates all requirements and processes payment through integrated banking partners</p>
+
+                    <div class="integration-box">
+                        <h4>Banking Integration</h4>
+                        <p>Capital Pay connects with local banks (Equity Bank, NCB) for automated payment collection and TRA account crediting</p>
+                    </div>
+                </div>
+
+                <!-- Step 3: Certificate Issuance -->
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Certificate Generation</h3>
+                    <p>Upon successful verification and payment confirmation, system generates digital certificate with unique reference number</p>
+
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>Unique Reference Number confirms:</strong><br>
+                        • CFA is fully verified<br>
+                        • TRA account is properly credited
+                    </div>
+                </div>
+
+                <!-- Step 4: TRA Integration -->
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>TRA Portal Integration</h3>
+                    <p>Verified CFAs can register consignments on TRA portal using their unique reference number</p>
+
+                    <div style="text-align: center; margin: 15px 0;">
+                        <span class="api-highlight">TAFFA → TRA Verification API</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #666;">Real-time verification using unique reference number as input parameter</p>
+                </div>
+            </div>
+
+            <!-- Transformation Impact -->
+            <div class="transformation-impact">
+                <div class="impact-header">
+                    <h2>🚀 Daily Operations Transformation</h2>
+                    <p>Where TAFFA revolutionizes TRA team workflows</p>
+                </div>
+                <div class="impact-content">
+                    <div class="impact-scenario">
+                        <h3>The New Reality</h3>
+                        <p>When an agent uses TRA portal to register a consignment, they simply input their <strong>Unique Reference Number</strong>. TAFFA provides TRA with a simple, secure API that instantly checks the number and delivers a real-time <span class="status-yes">"YES"</span> or <span class="status-no">"NO"</span> on whether the agent is accredited and in good standing.</p>
+
+                        <div class="no-more-section">
+                            <h4>💥 No More...</h4>
+                            <div class="no-more-grid">
+                                <div class="no-more-item">📞 Phone Calls</div>
+                                <div class="no-more-item">📧 Email Chains</div>
+                                <div class="no-more-item">⏰ Processing Delays</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CapitalPay Integration -->
+            <div class="transformation-impact capitalpay-section">
+                <div class="impact-header">
+                    <h2>🏦 Why CapitalPay?</h2>
+                    <p>Tanzania's Leading Payment Integration Partner</p>
+                </div>
+                <div class="impact-content">
+                    <div class="impact-scenario">
+                        <h3>Comprehensive Banking Network</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px;">
+                                <h4 style="color: #fff; margin-bottom: 15px;">🏦 Current Integrations</h4>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="background: rgba(255,255,255,0.3); padding: 8px 12px; border-radius: 6px; font-weight: bold;">NBC Bank</div>
+                                    <div style="background: rgba(255,255,255,0.3); padding: 8px 12px; border-radius: 6px; font-weight: bold;">Equity Bank</div>
+                                    <div style="background: rgba(255,255,255,0.3); padding: 8px 12px; border-radius: 6px; font-weight: bold;">M-Pesa</div>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 12px;">
+                                <h4 style="color: #fff; margin-bottom: 15px;">🔄 Ongoing Integrations</h4>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="background: rgba(255,255,255,0.25); padding: 8px 12px; border-radius: 6px; font-weight: bold;">EcoBank</div>
+                                    <div style="background: rgba(255,255,255,0.25); padding: 8px 12px; border-radius: 6px; font-weight: bold;">ABSA Bank</div>
+                                    <div style="background: rgba(255,255,255,0.25); padding: 8px 12px; border-radius: 6px; font-weight: bold;">KCB Bank</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(255,255,255,0.25); padding: 25px; border-radius: 15px; margin-top: 25px;">
+                            <h4 style="color: #fff; margin-bottom: 15px; text-align: center;">🎯 Proven Government Partnership</h4>
+                            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; border-left: 4px solid #fff;">
+                                <p style="font-size: 1.1rem; line-height: 1.6;">CapitalPay is the trusted payment processor behind <strong>Tanzania's new $90 PAX Tourism Tax system</strong>, successfully handling government revenue collection for international travelers. This proven track record demonstrates their capability to manage large-scale, government-mandated payment systems.</p>
+                                <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 8px; text-align: center;">
+                                    <strong>🌐 Reference:</strong> Tanzania Tourism Tax Implementation
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Proposition -->
+            <div class="value-section">
+                <h2>Value to Tanzania Revenue Authority (TRA)</h2>
+                <div class="value-grid">
+                    <div class="value-item">
+                        <h4>💰 Increased VAT Revenue</h4>
+                        <p>Guaranteed revenue streams from verified agents</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>⚡ Enhanced Efficiency</h4>
+                        <p>Automated processes reduce manual workload</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>📈 Expanded Tax Base</h4>
+                        <p>More verified agents = higher revenue collection</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>🗃️ Agent Database</h4>
+                        <p>Centralized registry of all verified CFAs</p>
+                    </div>
+                    <div class="value-item">
+                        <h4>📊 Real-time Analytics</h4>
+                        <p>Live dashboards for revenue tracking and agent performance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

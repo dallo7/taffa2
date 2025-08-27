@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAFFA Clearing & Forwarding System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(86, 171, 47, 0.4);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-processing {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-completed {
+            background: #cce5ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+
+        .invoice-preview {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .certificate {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            border: 2px solid #fdcb6e;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .reference-number {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 2px solid #3498db;
+        }
+
+        .tancis-integration {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .tancis-form {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .tancis-form input {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .tancis-form label {
+            color: white;
+            font-weight: 600;
+        }
+
+        .payment-option:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+        }
+
+        .payment-option.selected {
+            border: 3px solid #28a745 !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5) !important;
+        }
+
+        .processing-animation {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .payment-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .workflow {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚢 TAFFA Clearing & Forwarding System</h1>
+            <p>Streamlined customs clearance with TANCIS integration</p>
+        </div>
+
+        <div class="workflow">
+            <!-- Step 1: Consignment Details -->
+            <div class="step-card" id="step1">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Consignment Details</h3>
+
+                <div class="form-group">
+                    <label>Importer Name</label>
+                    <input type="text" id="importer" placeholder="Enter importer company name">
+                </div>
+
+                <div class="form-group">
+                    <label>Clearing & Forwarding Agent (CFA)</label>
+                    <select id="cfa">
+                        <option value="">Select CFA</option>
+                        <option value="cfa1">Tanzania Shipping Agents Ltd</option>
+                        <option value="cfa2">Dar Port Services Co.</option>
+                        <option value="cfa3">East Africa Logistics Ltd</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Consignment Value (USD)</label>
+                    <input type="number" id="value" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label>Consignment Description</label>
+                    <textarea id="description" rows="3" placeholder="Brief description of goods"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="submitConsignment()">Submit to TAFFA</button>
+                <div class="status-indicator status-pending" id="status1">Pending</div>
+            </div>
+
+            <!-- Step 2: TAFFA Processing -->
+            <div class="step-card" id="step2">
+                <div class="step-number">2</div>
+                <h3 class="step-title">TAFFA Invoice & Payment</h3>
+
+                <div class="invoice-preview hidden" id="invoice">
+                    <h4>📄 TAFFA Official Invoice</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea;">
+                        <p><strong>Invoice ID:</strong> <span id="invoiceId"></span></p>
+                        <p><strong>Processing Fee:</strong> USD <span id="processingFee"></span></p>
+                        <p><strong>VAT (18%):</strong> USD <span id="vatAmount"></span></p>
+                        <hr style="margin: 10px 0;">
+                        <p style="font-size: 18px;"><strong>Total Amount:</strong> TZS <span id="amountDue"></span></p>
+                    </div>
+
+                    <div class="capital-pay-section" id="capitalPay" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px;">💳 CapitalPay Payment Options</h4>
+                        <div class="payment-methods" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                            <div class="payment-option" onclick="selectPayment('absa')" style="background: #c41e3a; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                                🏦 ABSA Bank
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('mpesa')" style="background: #00d13a; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                                📱 M-Pesa
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('ecobank')" style="background: #1e90ff; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                                🏛️ EcoBank
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('equity')" style="background: #ff6b35; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                                🏢 Equity Bank
+                            </div>
+                            <div class="payment-option" onclick="selectPayment('nbc')" style="background: #1a472a; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s;">
+                                🏦 NBC Bank
+                            </div>
+                        </div>
+
+                        <div class="selected-payment hidden" id="selectedPayment" style="background: white; padding: 15px; border-radius: 8px; border: 2px solid #28a745;">
+                            <p><strong>Selected:</strong> <span id="paymentMethod"></span></p>
+                            <p><strong>Reference:</strong> <span id="paymentRef"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-success hidden" id="payBtn" onclick="processPayment()">Process Payment</button>
+                <div class="status-indicator status-pending" id="status2">Waiting for consignment</div>
+            </div>
+
+            <!-- Step 3: Certificate Generation -->
+            <div class="step-card" id="step3">
+                <div class="step-number">3</div>
+                <h3 class="step-title">TAFFA Accreditation Certificate</h3>
+
+                <div class="certificate hidden" id="certificate">
+                    <div style="border: 3px solid #2c3e50; background: linear-gradient(135deg, #ffffff, #f8f9fa); padding: 25px; border-radius: 15px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <!-- Header -->
+                        <div style="text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 15px; margin-bottom: 20px;">
+                            <h2 style="color: #2c3e50; margin: 0; font-size: 24px;">🏛️ TANZANIA FREIGHT FORWARDERS ASSOCIATION</h2>
+                            <h3 style="color: #3498db; margin: 5px 0 0 0; font-size: 18px;">OFFICIAL ACCREDITATION CERTIFICATE</h3>
+                        </div>
+
+                        <!-- Certificate Body -->
+                        <div style="text-align: center; margin: 20px 0;">
+                            <p style="font-size: 16px; color: #2c3e50; margin: 10px 0;">This is to certify that the consignment has been duly processed and cleared through TAFFA systems</p>
+                        </div>
+
+                        <!-- Reference Number Section -->
+                        <div style="text-align: center; background: #3498db; color: white; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                            <p style="margin: 0; font-weight: bold; font-size: 14px;">UNIQUE REFERENCE NUMBER</p>
+                            <div class="reference-number" id="refNumber" style="background: white; color: #2c3e50; font-family: 'Courier New', monospace; font-size: 20px; font-weight: bold; padding: 12px; border-radius: 8px; margin: 10px auto; border: 2px solid #2980b9; display: inline-block; min-width: 250px;"></div>
+                        </div>
+
+                        <!-- Details Section -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; font-size: 14px;">
+                            <div>
+                                <p><strong>Importer:</strong> <span id="certImporter"></span></p>
+                                <p><strong>CFA:</strong> <span id="certCFA"></span></p>
+                            </div>
+                            <div>
+                                <p><strong>Issue Date:</strong> <span id="issueDate"></span></p>
+                                <p><strong>Validity:</strong> 30 Days</p>
+                            </div>
+                        </div>
+
+                        <!-- Value Section -->
+                        <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; margin: 15px 0;">
+                            <p style="margin: 0;"><strong>Consignment Value:</strong> USD <span id="certValue"></span></p>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; color: #6c757d;">Processing Fee Paid: TZS <span id="certFeesPaid"></span></p>
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="text-align: center; border-top: 2px solid #3498db; padding-top: 15px; margin-top: 20px;">
+                            <p style="margin: 0; font-size: 12px; color: #6c757d;">This certificate is digitally verified and valid for Tanzania customs clearance</p>
+                            <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: bold; color: #2c3e50;">Certificate ID: <span id="certificateId"></span></p>
+                        </div>
+
+                        <!-- Digital Seal -->
+                        <div style="position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 12px; text-align: center; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                            <div>
+                                TAFFA<br>VERIFIED<br>✓
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="downloadCertificate()" style="margin-right: 10px;">📄 Download PDF</button>
+                        <button class="btn btn-success" onclick="proceedToTANCIS()">➡️ Proceed to TANCIS</button>
+                    </div>
+                </div>
+
+                <div class="status-indicator status-pending" id="status3">Awaiting payment</div>
+            </div>
+        </div>
+
+        <!-- TANCIS Integration Section -->
+        <div class="tancis-integration">
+            <h2>🔗 TANCIS Integration Portal</h2>
+            <p>Enter your TAFFA reference number in the TANCIS declaration form</p>
+
+            <div class="tancis-form">
+                <h4>TANCIS CFA Module - Declaration Form</h4>
+
+                <div class="form-group">
+                    <label>Declaration Number</label>
+                    <input type="text" id="declarationNo" placeholder="DEC/2025/001234">
+                </div>
+
+                <div class="form-group">
+                    <label>Consignee Details</label>
+                    <input type="text" id="consignee" placeholder="Enter consignee information">
+                </div>
+
+                <div class="form-group">
+                    <label>TAFFA Reference Number (Required)</label>
+                    <input type="text" id="taffaRef" placeholder="Enter TAFFA reference number" style="border: 3px solid #ffd700;">
+                </div>
+
+                <div class="form-group">
+                    <label>Port of Entry</label>
+                    <select id="port">
+                        <option value="">Select Port</option>
+                        <option value="dar">Dar es Salaam Port</option>
+                        <option value="mtwara">Mtwara Port</option>
+                        <option value="tanga">Tanga Port</option>
+                        <option value="kilifi">Kilifi Border</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="verifyTAFFAReference()">Verify & Submit Declaration</button>
+
+                <div class="verification-success" id="verificationSuccess">
+                    <strong>✅ Verification Successful!</strong><br>
+                    TAFFA reference verified. Declaration submitted to TANCIS for processing.
+                    <br><strong>Status:</strong> Under Customs Review
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let invoiceData = {};
+        let referenceNumber = '';
+        let selectedPaymentMethod = '';
+        let consignmentData = {};
+
+        function submitConsignment() {
+            const importer = document.getElementById('importer').value;
+            const cfa = document.getElementById('cfa').value;
+            const value = document.getElementById('value').value;
+            const description = document.getElementById('description').value;
+
+            if (!importer || !cfa || !value || !description) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Store consignment data
+            consignmentData = { importer, cfa, value, description };
+
+            // Update status
+            document.getElementById('status1').className = 'status-indicator status-processing';
+            document.getElementById('status1').textContent = 'Processing';
+
+            // Generate invoice
+            setTimeout(() => {
+                generateInvoice(importer, cfa, value);
+            }, 2000);
+        }
+
+        function generateInvoice(importer, cfa, value) {
+            const invoiceId = 'TAFFA-INV-' + Date.now().toString().slice(-8);
+            const processingFee = parseFloat(value) * 0.05; // 5% processing fee
+            const vat = processingFee * 0.18; // 18% VAT
+            const totalUSD = processingFee + vat;
+            const totalTZS = totalUSD * 2300; // USD to TZS conversion
+
+            invoiceData = {
+                id: invoiceId,
+                processingFee: processingFee.toFixed(2),
+                vat: vat.toFixed(2),
+                totalUSD: totalUSD.toFixed(2),
+                totalTZS: totalTZS.toFixed(2)
+            };
+
+            document.getElementById('invoiceId').textContent = invoiceId;
+            document.getElementById('processingFee').textContent = processingFee.toFixed(2);
+            document.getElementById('vatAmount').textContent = vat.toFixed(2);
+            document.getElementById('amountDue').textContent = totalTZS.toFixed(2);
+
+            document.getElementById('invoice').classList.remove('hidden');
+            document.getElementById('payBtn').classList.remove('hidden');
+
+            document.getElementById('status1').className = 'status-indicator status-completed';
+            document.getElementById('status1').textContent = 'Completed';
+
+            document.getElementById('status2').className = 'status-indicator status-processing';
+            document.getElementById('status2').textContent = 'Invoice Generated - Select Payment';
+
+            // Animate progress bar
+            animateProgress();
+        }
+
+        function selectPayment(method) {
+            // Remove previous selections
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Mark selected
+            event.target.classList.add('selected');
+
+            const paymentMethods = {
+                'absa': { name: 'ABSA Bank Tanzania', ref: 'ABSA-' + Math.random().toString(36).substr(2, 8) },
+                'mpesa': { name: 'Vodacom M-Pesa', ref: 'MPESA-' + Math.random().toString(36).substr(2, 8) },
+                'ecobank': { name: 'Ecobank Tanzania', ref: 'ECO-' + Math.random().toString(36).substr(2, 8) },
+                'equity': { name: 'Equity Bank Tanzania', ref: 'EQB-' + Math.random().toString(36).substr(2, 8) },
+                'nbc': { name: 'National Bank of Commerce', ref: 'NBC-' + Math.random().toString(36).substr(2, 8) }
+            };
+
+            selectedPaymentMethod = paymentMethods[method];
+
+            document.getElementById('paymentMethod').textContent = selectedPaymentMethod.name;
+            document.getElementById('paymentRef').textContent = selectedPaymentMethod.ref;
+            document.getElementById('selectedPayment').classList.remove('hidden');
+
+            // Enable payment button
+            document.getElementById('payBtn').textContent = `Pay TZS ${invoiceData.totalTZS} via ${selectedPaymentMethod.name}`;
+        }
+
+        function animateProgress() {
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 2;
+                document.getElementById('progress').style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+        function processPayment() {
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method first');
+                return;
+            }
+
+            const payBtn = document.getElementById('payBtn');
+            payBtn.innerHTML = '<span class="processing-animation"></span> Processing Payment...';
+            payBtn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                // Generate certificate
+                generateCertificate();
+
+                document.getElementById('status2').className = 'status-indicator status-completed';
+                document.getElementById('status2').textContent = 'Payment Confirmed via ' + selectedPaymentMethod.name;
+
+                document.getElementById('status3').className = 'status-indicator status-completed';
+                document.getElementById('status3').textContent = 'Certificate Generated & Ready';
+
+                // Show payment success
+                const successMsg = document.createElement('div');
+                successMsg.className = 'payment-success';
+                successMsg.style.display = 'block';
+                successMsg.innerHTML = `
+                    <strong>✅ Payment Successful!</strong><br>
+                    Transaction ID: ${selectedPaymentMethod.ref}<br>
+                    Amount: TZS ${invoiceData.totalTZS}<br>
+                    Method: ${selectedPaymentMethod.name}
+                `;
+                document.getElementById('capitalPay').appendChild(successMsg);
+
+                payBtn.style.display = 'none';
+
+                alert(`Payment successful via ${selectedPaymentMethod.name}!\nTransaction ID: ${selectedPaymentMethod.ref}\nCertificate generated with reference: ${referenceNumber}`);
+            }, 3500);
+        }
+
+        function generateCertificate() {
+            // Generate unique reference number
+            const year = new Date().getFullYear();
+            const month = String(new Date().getMonth() + 1).padStart(2, '0');
+            const day = String(new Date().getDate()).padStart(2, '0');
+            const random = Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            referenceNumber = `TAFFA-${year}${month}${day}-${random}`;
+            const certificateId = `CERT-${Date.now().toString().slice(-8)}`;
+
+            // Populate certificate
+            document.getElementById('refNumber').textContent = referenceNumber;
+            document.getElementById('certificateId').textContent = certificateId;
+            document.getElementById('certImporter').textContent = consignmentData.importer;
+            document.getElementById('certCFA').textContent = document.getElementById('cfa').selectedOptions[0].text;
+            document.getElementById('certValue').textContent = consignmentData.value;
+            document.getElementById('certFeesPaid').textContent = invoiceData.totalTZS;
+
+            // Set issue date
+            const today = new Date();
+            document.getElementById('issueDate').textContent = today.toLocaleDateString('en-GB');
+
+            document.getElementById('certificate').classList.remove('hidden');
+
+            // Auto-populate TAFFA reference in TANCIS form
+            document.getElementById('taffaRef').value = referenceNumber;
+        }
+
+        function downloadCertificate() {
+            alert('Certificate download initiated...\nFile: TAFFA_Certificate_' + referenceNumber + '.pdf');
+        }
+
+        function proceedToTANCIS() {
+            document.getElementById('taffaRef').focus();
+            document.querySelector('.tancis-integration').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function verifyTAFFAReference() {
+            const taffaRef = document.getElementById('taffaRef').value;
+            const declarationNo = document.getElementById('declarationNo').value;
+            const consignee = document.getElementById('consignee').value;
+            const port = document.getElementById('port').value;
+
+            if (!taffaRef || !declarationNo || !consignee || !port) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (!taffaRef.startsWith('TAFFA-')) {
+                alert('Invalid TAFFA reference number format');
+                return;
+            }
+
+            // Simulate verification
+            setTimeout(() => {
+                document.getElementById('verificationSuccess').style.display = 'block';
+
+                // Add animation effect
+                document.getElementById('verificationSuccess').style.opacity = '0';
+                document.getElementById('verificationSuccess').style.transform = 'translateY(-10px)';
+
+                setTimeout(() => {
+                    document.getElementById('verificationSuccess').style.transition = 'all 0.5s ease';
+                    document.getElementById('verificationSuccess').style.opacity = '1';
+                    document.getElementById('verificationSuccess').style.transform = 'translateY(0)';
+                }, 100);
+            }, 1500);
+        }
+
+        // Auto-fill demo data for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some demo data
+            setTimeout(() => {
+                document.getElementById('importer').value = 'ABC Trading Company Ltd';
+                document.getElementById('cfa').value = 'cfa1';
+                document.getElementById('value').value = '25000';
+                document.getElementById('description').value = 'Electronics and computer equipment';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
